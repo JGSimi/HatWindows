@@ -5,6 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using Markdig;
+using MarkdigBlock = Markdig.Syntax.Block;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
@@ -73,7 +74,7 @@ public partial class MarkdownViewer : UserControl
         RichTextContent.Document = doc;
     }
 
-    private void ProcessBlock(Block block, BlockCollection blocks)
+    private void ProcessBlock(MarkdigBlock block, BlockCollection blocks)
     {
         switch (block)
         {
