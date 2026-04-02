@@ -11,7 +11,7 @@ public partial class App : Application
     private static Mutex? _mutex;
     private HotkeyService? _hotkeyService;
     private TrayPopoverWindow? _trayPopover;
-    private H.NotifyIcon.TaskbarIcon? _taskbarIcon;
+    private Hardcodet.Wpf.TaskbarNotification.TaskbarIcon? _taskbarIcon;
 
     public static AssistantViewModel AssistantVM { get; private set; } = null!;
     public static ConversationManager ConversationMgr { get; private set; } = null!;
@@ -62,7 +62,7 @@ public partial class App : Application
 
     private void SetupTrayIcon()
     {
-        _taskbarIcon = new H.NotifyIcon.TaskbarIcon
+        _taskbarIcon = new Hardcodet.Wpf.TaskbarNotification.TaskbarIcon
         {
             ToolTipText = "Hat - Assistente de IA",
         };
@@ -70,7 +70,7 @@ public partial class App : Application
         // Set icon based on processing state
         UpdateTrayIcon(false);
 
-        _taskbarIcon.TrayLeftMouseUp += (_, _) => TogglePopover();
+        _taskbarIcon.TrayMouseDoubleClick += (_, _) => TogglePopover();
     }
 
     public void UpdateTrayIcon(bool isProcessing)
