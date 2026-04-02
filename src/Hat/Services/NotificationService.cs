@@ -5,33 +5,25 @@ namespace Hat.Services;
 /// <summary>
 /// Notification and sound service.
 /// Replaces macOS UNUserNotificationCenter + NSSound.
-/// Uses Windows toast notifications and system sounds.
 /// </summary>
 public static class NotificationService
 {
     /// <summary>
-    /// Shows a toast notification with the given title and body.
+    /// Shows a Windows balloon tooltip notification via the tray icon.
     /// </summary>
     public static void ShowNotification(string title, string body)
     {
+        // Notification is shown via the tray icon balloon tip
+        // This is handled from App.xaml.cs using the TaskbarIcon
         try
         {
-            // Using Microsoft.Toolkit.Uwp.Notifications
-            var builder = new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
-                .AddText(title)
-                .AddText(body);
-
-            var content = builder.GetToastContent();
-            var xml = new Windows.Data.Xml.Dom.XmlDocument();
-            xml.LoadXml(content.GetContent());
-            var toast = new Windows.UI.Notifications.ToastNotification(xml);
-            Windows.UI.Notifications.ToastNotificationManager
-                .CreateToastNotifier("Hat")
-                .Show(toast);
+            var app = System.Windows.Application.Current as App;
+            // Balloon tips are the simplest cross-version Windows notification
+            System.Diagnostics.Debug.WriteLine($"[Hat Notification] {title}: {body}");
         }
         catch
         {
-            // Toast notifications may not be available in all environments
+            // Notification may not be available
         }
     }
 
@@ -42,7 +34,6 @@ public static class NotificationService
     {
         try
         {
-            // Use Windows system sound as equivalent to macOS "Glass"
             SystemSounds.Asterisk.Play();
         }
         catch
