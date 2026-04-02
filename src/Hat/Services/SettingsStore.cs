@@ -174,6 +174,24 @@ public partial class SettingsStore : ObservableObject
         OnPropertyChanged(nameof(GlobalOutputTokens));
     }
 
+    /// <summary>
+    /// Save last used model for a specific provider.
+    /// Port of CloudProvider.saveLastModel() from SettingsStore.swift.
+    /// </summary>
+    public void SaveLastModel(CloudProvider provider, string model)
+    {
+        _data.LastModelPerProvider[provider.CredentialKey()] = model;
+        Save();
+    }
+
+    /// <summary>
+    /// Load last used model for a specific provider.
+    /// </summary>
+    public string? LoadLastModel(CloudProvider provider)
+    {
+        return _data.LastModelPerProvider.TryGetValue(provider.CredentialKey(), out var model) ? model : null;
+    }
+
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // MARK: - Persistence
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -239,5 +257,8 @@ public partial class SettingsStore : ObservableObject
         public int GlobalTotalTokens { get; set; }
         public int GlobalInputTokens { get; set; }
         public int GlobalOutputTokens { get; set; }
+
+        // Per-provider last model cache
+        public Dictionary<string, string> LastModelPerProvider { get; set; } = new();
     }
 }

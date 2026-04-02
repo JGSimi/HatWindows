@@ -1,0 +1,69 @@
+<UserControl x:Class="Hat.Views.Controls.SettingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel>
+        <!-- Inference Mode Toggle -->
+        <Grid Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BtnLocal" Grid.Column="0" Content="Local"
+                    FontSize="11" FontWeight="Medium" Padding="8,6"
+                    Click="LocalMode_Click" />
+            <Button x:Name="BtnApi" Grid.Column="1" Content="API"
+                    FontSize="11" FontWeight="Medium" Padding="8,6"
+                    Click="ApiMode_Click" />
+        </Grid>
+
+        <!-- Provider Quick-Switch (horizontal chips) -->
+        <ScrollViewer x:Name="ProviderScroll" HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Disabled" Margin="0,0,0,8" Height="30">
+            <StackPanel x:Name="ProviderChips" Orientation="Horizontal" />
+        </ScrollViewer>
+
+        <!-- Current Model -->
+        <Border Background="{DynamicResource SurfaceTertiaryBrush}"
+                CornerRadius="5" Padding="8,4" Margin="0,0,0,8">
+            <TextBlock x:Name="ModelDisplay" FontSize="10"
+                       FontFamily="Cascadia Code, Consolas"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+        </Border>
+
+        <!-- Token Counter -->
+        <StackPanel Margin="0,0,0,8">
+            <TextBlock FontSize="10" FontWeight="Medium"
+                       Foreground="{DynamicResource TextMutedBrush}" Text="TOKENS" />
+            <Grid Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="TokenIn" FontSize="9"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Grid.Column="1" x:Name="TokenOut" FontSize="9"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Grid.Column="2" x:Name="TokenTotal" FontSize="9"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Right" FontWeight="Medium" />
+            </Grid>
+            <!-- Progress bar -->
+            <Border Height="3" CornerRadius="1.5" Margin="0,4,0,0"
+                    Background="{DynamicResource SurfaceTertiaryBrush}">
+                <Border x:Name="TokenProgressFill" Height="3" CornerRadius="1.5"
+                        Background="{DynamicResource AccentPrimaryBrush}"
+                        HorizontalAlignment="Left" Width="0" />
+            </Border>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Avancado" FontSize="10" Padding="12,5" Margin="0,0,8,0"
+                    Click="Advanced_Click"
+                    Style="{DynamicResource GlassIconButton}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

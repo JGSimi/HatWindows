@@ -1,0 +1,20 @@
+<UserControl x:Class="Hat.Views.Controls.MarkdownViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <RichTextBox x:Name="RichTextContent"
+                 IsReadOnly="True"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 FontFamily="Segoe UI Variable, Segoe UI"
+                 FontSize="12.5"
+                 IsDocumentEnabled="True"
+                 Padding="0">
+        <RichTextBox.Resources>
+            <Style TargetType="Paragraph">
+                <Setter Property="Margin" Value="0,2,0,2" />
+            </Style>
+        </RichTextBox.Resources>
+    </RichTextBox>
+</UserControl>

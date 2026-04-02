@@ -1,0 +1,14 @@
+<UserControl x:Class="Hat.Views.Controls.TypingDots"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="20">
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                VerticalAlignment="Center" x:Name="DotsPanel">
+        <Ellipse x:Name="Dot0" Width="5" Height="5" Margin="0,0,4,0"
+                 Fill="{DynamicResource AccentPrimaryBrush}" Opacity="0.25" />
+        <Ellipse x:Name="Dot1" Width="5" Height="5" Margin="0,0,4,0"
+                 Fill="{DynamicResource AccentPrimaryBrush}" Opacity="0.25" />
+        <Ellipse x:Name="Dot2" Width="5" Height="5"
+                 Fill="{DynamicResource AccentPrimaryBrush}" Opacity="0.25" />
+    </StackPanel>
+</UserControl>

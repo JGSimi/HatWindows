@@ -1,6 +1,7 @@
 <Window x:Class="Hat.Views.Windows.AnalysisWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Hat.Views.Controls"
         Title="Hat - Analise de Tela"
         Width="1000" Height="700"
         MinWidth="700" MinHeight="500"
@@ -21,14 +22,24 @@
             <Border Grid.Row="0" Background="{DynamicResource BackgroundSecondaryBrush}"
                     CornerRadius="12,12,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid>
-                    <TextBlock Text="Analise de Tela" FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
-                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Analise de Tela" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <!-- Processing badge -->
+                        <Border x:Name="ProcessingBadge" Visibility="Collapsed"
+                                Background="{DynamicResource AccentSubtleBrush}"
+                                CornerRadius="8" Padding="8,2" Margin="8,0,0,0">
+                            <TextBlock Text="Processando..." FontSize="10"
+                                       Foreground="{DynamicResource AccentPrimaryBrush}" />
+                        </Border>
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                                 VerticalAlignment="Center" Margin="0,0,8,0">
                         <Button Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
                                 Width="28" Height="28" Click="Close_Click"
-                                Style="{StaticResource WindowCloseButton}" />
+                                Style="{DynamicResource WindowCloseButton}" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -36,52 +47,84 @@
             <!-- Content: Split panel -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.45*" /> <!-- Analysis result -->
+                    <ColumnDefinition Width="0.45*" />
                     <ColumnDefinition Width="1" />
-                    <ColumnDefinition Width="0.55*" /> <!-- Screenshot -->
+                    <ColumnDefinition Width="0.55*" />
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: Analysis Result -->
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" /> <!-- Action buttons -->
+                        <RowDefinition Height="Auto" /> <!-- Follow-up input -->
                     </Grid.RowDefinitions>
 
-                    <ScrollViewer Grid.Row="0" Padding="16" VerticalScrollBarVisibility="Auto">
-                        <!-- Analysis text (markdown rendered) -->
-                        <TextBlock x:Name="AnalysisText"
-                                   Text="{Binding AnalysisResult}"
-                                   TextWrapping="Wrap" FontSize="13"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <!-- Loading state -->
+                    <StackPanel x:Name="LoadingState" Grid.Row="0"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Border Width="40" Height="40" CornerRadius="20"
+                                Background="{DynamicResource SurfaceTertiaryBrush}"
+                                HorizontalAlignment="Center" Margin="0,0,0,12">
+                            <TextBlock x:Name="SpinnerIcon" Text="&#xE72C;"
+                                       FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                       Foreground="{DynamicResource AccentPrimaryBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Analisando..." FontSize="13"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Empty state -->
+                    <StackPanel x:Name="AnalysisEmptyState" Grid.Row="0" Visibility="Collapsed"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE714;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" Margin="0,0,0,12" />
+                        <TextBlock Text="Ctrl+Shift+Z para capturar" FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Result (markdown) -->
+                    <ScrollViewer x:Name="ResultScroll" Grid.Row="0" Visibility="Collapsed"
+                                  Padding="16" VerticalScrollBarVisibility="Auto">
+                        <controls:MarkdownViewer x:Name="AnalysisMarkdown" />
                     </ScrollViewer>
 
+                    <!-- Action buttons (hover reveal) -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                HorizontalAlignment="Center" Margin="0,4"
+                                x:Name="ActionButtons" Visibility="Collapsed">
+                        <Button Content="&#xE72C; Nova analise" FontSize="11" Padding="12,6"
+                                Margin="0,0,8,0" Click="NewAnalysis_Click"
+                                Style="{DynamicResource GlassIconButton}" />
+                        <Button Content="Transferir para Chat" FontSize="11" Padding="12,6"
+                                Click="TransferToChat_Click"
+                                Style="{DynamicResource AccentButton}" />
+                    </StackPanel>
+
                     <!-- Follow-up input -->
-                    <Border Grid.Row="1" Padding="12,8">
+                    <Border Grid.Row="2" Padding="12,8" x:Name="FollowUpArea" Visibility="Collapsed">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-
                             <TextBox Grid.Column="0" x:Name="FollowUpBox"
                                      FontSize="12" Padding="10,8"
                                      Background="{DynamicResource InputBackgroundBrush}"
                                      Foreground="{DynamicResource TextPrimaryBrush}"
                                      BorderBrush="{DynamicResource BorderBrush}"
                                      BorderThickness="0.5"
-                                     Style="{StaticResource GlassTextBox}" />
-
-                            <Button Grid.Column="1" Content="&#xE724;" FontFamily="Segoe MDL2 Assets"
-                                    Width="28" Height="28" Margin="6,0"
+                                     KeyDown="FollowUp_KeyDown"
+                                     Style="{DynamicResource GlassTextBox}" />
+                            <Button Grid.Column="1" Width="28" Height="28" Margin="6,0,0,0"
                                     Click="FollowUp_Click"
-                                    Style="{StaticResource GlassIconButton}" />
-
-                            <Button Grid.Column="2" Content="Transferir para Chat"
-                                    FontSize="11" Padding="12,6"
-                                    Click="TransferToChat_Click"
-                                    Style="{StaticResource AccentButton}" />
+                                    Style="{DynamicResource AccentIconButton}">
+                                <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" FontSize="12" />
+                            </Button>
                         </Grid>
                     </Border>
                 </Grid>
@@ -90,10 +133,19 @@
                 <Rectangle Grid.Column="1" Fill="{DynamicResource BorderBrush}" />
 
                 <!-- Right: Screenshot Preview -->
-                <Border Grid.Column="2" Padding="16">
-                    <Image x:Name="ScreenshotPreview"
-                           Stretch="Uniform" StretchDirection="DownOnly" />
-                </Border>
+                <Grid Grid.Column="2">
+                    <Border Padding="16">
+                        <Image x:Name="ScreenshotPreview"
+                               Stretch="Uniform" StretchDirection="DownOnly" />
+                    </Border>
+                    <!-- Empty state for screenshot -->
+                    <StackPanel x:Name="ScreenshotEmpty"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="&#xEB9F;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" Opacity="0.5" />
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
     </Border>
