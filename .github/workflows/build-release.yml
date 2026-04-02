@@ -44,6 +44,7 @@ jobs:
 
       - name: Create portable ZIP
         run: |
+          New-Item -ItemType Directory -Path ./dist -Force
           Compress-Archive -Path ./publish/* -DestinationPath ./dist/Hat-Portable-${{ github.ref_name }}.zip
 
       - name: Install Inno Setup
