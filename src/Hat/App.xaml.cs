@@ -5,8 +5,6 @@ using Hat.Services;
 using Hat.Theme;
 using Hat.ViewModels;
 using Hat.Views.Windows;
-using Hardcodet.Wpf.TaskbarNotification;
-
 namespace Hat;
 
 public partial class App : Application
@@ -14,7 +12,7 @@ public partial class App : Application
     private static Mutex? _mutex;
     private HotkeyService? _hotkeyService;
     private TrayPopoverWindow? _trayPopover;
-    private TaskbarIcon? _taskbarIcon;
+    private H.NotifyIcon.TaskbarIcon? _taskbarIcon;
 
     public static AssistantViewModel AssistantVM { get; private set; } = null!;
     public static ConversationManager ConversationMgr { get; private set; } = null!;
@@ -83,10 +81,8 @@ public partial class App : Application
 
     private void SetupTrayIcon()
     {
-        _taskbarIcon = new TaskbarIcon
-        {
-            ToolTipText = "Hat - Assistente de IA",
-        };
+        _taskbarIcon = new H.NotifyIcon.TaskbarIcon();
+        _taskbarIcon.ToolTipText = "Hat - Assistente de IA";
 
         // Set icon — use embedded resource or fallback
         try
@@ -100,14 +96,10 @@ public partial class App : Application
         }
         catch
         {
-            // If icon fails, create a simple default icon
             _taskbarIcon.Icon = System.Drawing.SystemIcons.Application;
         }
 
-        // Double-click to toggle popover
-        _taskbarIcon.TrayMouseDoubleClick += (_, _) => TogglePopover();
-
-        // Left click also toggles
+        // Left click to toggle popover
         _taskbarIcon.TrayLeftMouseUp += (_, _) => TogglePopover();
 
         // Right-click context menu
