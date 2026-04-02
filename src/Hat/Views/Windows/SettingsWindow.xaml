@@ -1,0 +1,69 @@
+<Window x:Class="Hat.Views.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hat - Configuracoes"
+        Width="700" Height="500"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded">
+
+    <Border CornerRadius="12" Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Title Bar -->
+            <Border Grid.Row="0" Background="{DynamicResource BackgroundSecondaryBrush}"
+                    CornerRadius="12,12,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <TextBlock Text="Configuracoes" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    <Button Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                            Width="28" Height="28" HorizontalAlignment="Right" Margin="0,0,8,0"
+                            Click="Close_Click" Style="{StaticResource WindowCloseButton}" />
+                </Grid>
+            </Border>
+
+            <!-- Content with sidebar tabs -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="1" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Tab sidebar -->
+                <StackPanel Grid.Column="0" Margin="8,12">
+                    <RadioButton x:Name="TabGeneral" Content="Geral" IsChecked="True"
+                                 GroupName="SettingsTabs" Click="Tab_Click"
+                                 Style="{StaticResource SettingsTabButton}" />
+                    <RadioButton x:Name="TabAppearance" Content="Aparencia"
+                                 GroupName="SettingsTabs" Click="Tab_Click"
+                                 Style="{StaticResource SettingsTabButton}" />
+                    <RadioButton x:Name="TabModels" Content="Modelos e IA"
+                                 GroupName="SettingsTabs" Click="Tab_Click"
+                                 Style="{StaticResource SettingsTabButton}" />
+                    <RadioButton x:Name="TabBehavior" Content="Comportamento"
+                                 GroupName="SettingsTabs" Click="Tab_Click"
+                                 Style="{StaticResource SettingsTabButton}" />
+                    <RadioButton x:Name="TabShortcuts" Content="Atalhos"
+                                 GroupName="SettingsTabs" Click="Tab_Click"
+                                 Style="{StaticResource SettingsTabButton}" />
+                </StackPanel>
+
+                <Rectangle Grid.Column="1" Fill="{DynamicResource BorderBrush}" />
+
+                <!-- Tab content -->
+                <ScrollViewer Grid.Column="2" Padding="20,16"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="TabContent" />
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,61 @@
+<UserControl x:Class="Hat.Views.Controls.ChatBubble"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Hat.Converters">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="0,2">
+        <!-- User message -->
+        <Border x:Name="UserBubble"
+                Visibility="{Binding IsUser, Converter={StaticResource BoolToVis}}"
+                HorizontalAlignment="Right" MaxWidth="500"
+                CornerRadius="14" Padding="14,10"
+                Background="{DynamicResource AccentSubtleBrush}"
+                BorderBrush="{DynamicResource AccentPrimaryBrush}"
+                BorderThickness="0.5"
+                Opacity="0.95">
+            <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                       FontSize="12.5" Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Border>
+
+        <!-- Assistant message -->
+        <StackPanel x:Name="AssistantPanel"
+                    Visibility="{Binding IsUser, Converter={StaticResource BoolToVis}, ConverterParameter=invert}"
+                    Orientation="Horizontal" HorizontalAlignment="Left">
+            <!-- Avatar -->
+            <Border Width="30" Height="30" CornerRadius="15"
+                    Background="{DynamicResource GlassSurfaceBrush}"
+                    VerticalAlignment="Top" Margin="0,0,8,0">
+                <TextBlock Text="🎩" FontSize="14"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <Border.Effect>
+                    <DropShadowEffect Color="{DynamicResource AccentPrimaryColor}"
+                                      BlurRadius="5" Opacity="0.3" ShadowDepth="0" />
+                </Border.Effect>
+            </Border>
+
+            <!-- Response text -->
+            <StackPanel MaxWidth="480">
+                <!-- Streaming indicator -->
+                <StackPanel x:Name="StreamingDots"
+                            Visibility="{Binding IsStreaming, Converter={StaticResource BoolToVis}}"
+                            Orientation="Horizontal" Margin="0,4,0,4">
+                    <Ellipse Width="5" Height="5" Fill="{DynamicResource AccentPrimaryBrush}"
+                             Opacity="0.6" Margin="0,0,4,0" />
+                    <Ellipse Width="5" Height="5" Fill="{DynamicResource AccentPrimaryBrush}"
+                             Opacity="0.4" Margin="0,0,4,0" />
+                    <Ellipse Width="5" Height="5" Fill="{DynamicResource AccentPrimaryBrush}"
+                             Opacity="0.25" />
+                </StackPanel>
+
+                <!-- Message content (markdown rendered as plain text for now) -->
+                <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                           FontSize="12.5" Foreground="{DynamicResource TextPrimaryBrush}"
+                           LineHeight="20" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

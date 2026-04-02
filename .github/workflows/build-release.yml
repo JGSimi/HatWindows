@@ -1,0 +1,94 @@
+name: Build & Release Hat Windows
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0
+  workflow_dispatch:  # Manual trigger
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_PATH: 'src/Hat/Hat.csproj'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write  # Required for creating releases
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Publish (self-contained single file)
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            --output ./publish
+
+      - name: Create portable ZIP
+        run: |
+          Compress-Archive -Path ./publish/* -DestinationPath ./dist/Hat-Portable-${{ github.ref_name }}.zip
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup -y --no-progress
+
+      - name: Build installer with Inno Setup
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/hat-installer.iss
+        shell: pwsh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hat-windows-build
+          path: |
+            dist/*.exe
+            dist/*.zip
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Hat ${{ github.ref_name }}
+          body: |
+            ## Hat para Windows ${{ github.ref_name }}
+
+            ### Download
+            - **Hat-Setup-*.exe** — Instalador (recomendado). Baixe e execute.
+            - **Hat-Portable-*.zip** — Versao portatil. Extraia e execute `Hat.exe`.
+
+            ### Requisitos
+            - Windows 10 (versao 1809) ou superior
+            - Nenhuma instalacao adicional necessaria (o app ja inclui tudo)
+
+            ### Novidades
+            - Versao inicial para Windows
+            - Chat com IA via bandeja do sistema
+            - Suporte a OpenAI, Anthropic, Google Gemini, Ollama e mais
+            - Atalhos globais: Ctrl+Shift+X/Z/Space/H
+            - Captura e analise de tela
+            - 9 temas de cor
+            - Modo escuro/claro automatico
+          files: |
+            dist/Hat-Setup-*.exe
+            dist/Hat-Portable-*.zip
+          draft: false
+          prerelease: false

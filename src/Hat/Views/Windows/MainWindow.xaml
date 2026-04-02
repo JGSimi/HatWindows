@@ -1,0 +1,63 @@
+<Window x:Class="Hat.Views.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Hat.Views.Controls"
+        Title="Hat" Width="820" Height="650"
+        MinWidth="600" MinHeight="500"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded">
+
+    <Border CornerRadius="12" Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36" /> <!-- Custom title bar -->
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Border Grid.Row="0" Background="{DynamicResource BackgroundSecondaryBrush}"
+                    CornerRadius="12,12,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <TextBlock Text="Hat" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+                    <!-- Window controls -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center" Margin="0,0,8,0">
+                        <Button Content="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                Width="28" Height="28" Click="Minimize_Click"
+                                Style="{StaticResource WindowControlButton}" />
+                        <Button Content="&#xE922;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                Width="28" Height="28" Click="Maximize_Click"
+                                Style="{StaticResource WindowControlButton}" />
+                        <Button Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                Width="28" Height="28" Click="Close_Click"
+                                Style="{StaticResource WindowCloseButton}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content: Sidebar + Chat -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" /> <!-- Sidebar -->
+                    <ColumnDefinition Width="1" />   <!-- Divider -->
+                    <ColumnDefinition Width="*" />   <!-- Chat area -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Sidebar -->
+                <controls:SidebarView Grid.Column="0" />
+
+                <!-- Divider -->
+                <Rectangle Grid.Column="1" Fill="{DynamicResource BorderBrush}" />
+
+                <!-- Chat Area -->
+                <controls:ChatArea Grid.Column="2" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

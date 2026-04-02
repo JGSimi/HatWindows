@@ -1,0 +1,106 @@
+<Window x:Class="Hat.Views.Windows.TrayPopoverWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Hat.Views.Controls"
+        Title="Hat"
+        Width="380" Height="480"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True" ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded"
+        Deactivated="Window_Deactivated">
+
+    <Border CornerRadius="16" Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource GlassBorderSubtleBrush}" BorderThickness="0.5"
+            x:Name="MainBorder">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" Opacity="0.2" ShadowDepth="8" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" /> <!-- Header -->
+                <RowDefinition Height="*" />    <!-- Chat messages -->
+                <RowDefinition Height="Auto" /> <!-- Input -->
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Padding="16,12" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                <Grid>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Name="GreetingText" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <!-- Model tag -->
+                            <Border Background="{DynamicResource SurfaceTertiaryBrush}"
+                                    CornerRadius="5" Padding="8,3">
+                                <TextBlock x:Name="ModelTag" FontSize="10" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextMutedBrush}" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Header buttons -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                        <!-- Expand to main window -->
+                        <Button Content="&#xE740;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                Width="28" Height="28" Click="Expand_Click"
+                                ToolTip="Abrir janela principal"
+                                Style="{StaticResource GlassIconButton}" />
+                        <!-- Close -->
+                        <Button Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                Width="28" Height="28" Click="Close_Click"
+                                ToolTip="Fechar"
+                                Style="{StaticResource GlassIconButton}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Chat Messages -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          x:Name="ChatScrollViewer" Padding="12,0">
+                <ItemsControl x:Name="MessagesControl"
+                              ItemsSource="{Binding Messages}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:ChatBubble Margin="0,2" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Input Area -->
+            <Border Grid.Row="2" Padding="12,8,12,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0" x:Name="InputBox"
+                             Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="False" TextWrapping="Wrap"
+                             MaxHeight="80"
+                             FontSize="12.5"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             Background="{DynamicResource InputBackgroundBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}"
+                             BorderThickness="0.5"
+                             Padding="12,9"
+                             KeyDown="InputBox_KeyDown"
+                             Style="{StaticResource GlassTextBox}" />
+
+                    <!-- Send / Stop button -->
+                    <Button Grid.Column="1" x:Name="SendButton"
+                            Width="32" Height="32" Margin="8,0,0,0"
+                            Click="Send_Click"
+                            Style="{StaticResource AccentIconButton}">
+                        <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

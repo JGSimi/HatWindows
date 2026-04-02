@@ -1,0 +1,66 @@
+<Window x:Class="Hat.Views.Windows.QuickInputWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hat - Quick Input"
+        Width="680" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True" ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+        Deactivated="Window_Deactivated">
+
+    <Border CornerRadius="16" Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource GlassBorderBrush}" BorderThickness="0.5"
+            Padding="20">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" Opacity="0.25" ShadowDepth="10" />
+        </Border.Effect>
+
+        <StackPanel>
+            <!-- Input field -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0" x:Name="QuickInputBox"
+                         Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="False" TextWrapping="Wrap"
+                         MaxHeight="120"
+                         FontSize="14" FontWeight="Regular"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         Background="{DynamicResource InputBackgroundBrush}"
+                         BorderBrush="{DynamicResource BorderBrush}"
+                         BorderThickness="0.5"
+                         Padding="16,12"
+                         KeyDown="QuickInputBox_KeyDown"
+                         Style="{StaticResource GlassTextBox}">
+                    <TextBox.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="12" />
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+
+                <Button Grid.Column="1" Width="36" Height="36" Margin="10,0,0,0"
+                        Click="Send_Click"
+                        Style="{StaticResource AccentIconButton}">
+                    <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
+                </Button>
+            </Grid>
+
+            <!-- Hint text -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
+                <TextBlock Text="Return para enviar" FontSize="10"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="  |  " FontSize="10"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="Esc para fechar" FontSize="10"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
