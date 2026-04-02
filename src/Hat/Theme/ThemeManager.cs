@@ -20,35 +20,49 @@ public static class ThemeManager
         ApplyTheme(_isDarkMode);
 
         // Listen for system theme changes
-        SystemEvents.UserPreferenceChanged += (_, args) =>
+        try
         {
-            if (args.Category == UserPreferenceCategory.General)
+            SystemEvents.UserPreferenceChanged += (_, args) =>
             {
-                var isDark = IsSystemDarkTheme();
-                if (isDark != _isDarkMode)
+                if (args.Category == UserPreferenceCategory.General)
                 {
-                    _isDarkMode = isDark;
-                    Application.Current.Dispatcher.Invoke(() => ApplyTheme(isDark));
+                    var isDark = IsSystemDarkTheme();
+                    if (isDark != _isDarkMode)
+                    {
+                        _isDarkMode = isDark;
+                        Application.Current?.Dispatcher?.Invoke(() => ApplyTheme(isDark));
+                    }
                 }
-            }
-        };
+            };
+        }
+        catch { }
     }
 
     public static void ApplyTheme(bool isDark)
     {
         _isDarkMode = isDark;
-        var dict = new ResourceDictionary
-        {
-            Source = new Uri(isDark
-                ? "pack://application:,,,/Theme/DarkTheme.xaml"
-                : "pack://application:,,,/Theme/LightTheme.xaml")
-        };
 
         var app = Application.Current;
-        app.Resources.MergedDictionaries.Clear();
-        app.Resources.MergedDictionaries.Add(dict);
+        if (app == null) return;
 
-        ThemeChanged?.Invoke();
+        try
+        {
+            var dict = new ResourceDictionary
+            {
+                Source = new Uri(isDark
+                    ? "pack://application:,,,/Theme/DarkTheme.xaml"
+                    : "pack://application:,,,/Theme/LightTheme.xaml")
+            };
+
+            app.Resources.MergedDictionaries.Clear();
+            app.Resources.MergedDictionaries.Add(dict);
+
+            ThemeChanged?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Theme apply failed: {ex.Message}");
+        }
     }
 
     public static void SetAccentTheme(string themeName)
@@ -56,18 +70,26 @@ public static class ThemeManager
         if (!ThemeColors.ThemePresets.TryGetValue(themeName, out var preset)) return;
 
         var app = Application.Current;
-        app.Resources["AccentPrimaryBrush"] = new System.Windows.Media.SolidColorBrush(preset.Primary);
-        app.Resources["AccentPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush(preset.Hover);
-        app.Resources["AccentPrimaryColor"] = preset.Primary;
-        app.Resources["AccentPrimaryHoverColor"] = preset.Hover;
+        if (app == null) return;
 
-        // Accent subtle variations
-        app.Resources["AccentSubtleBrush"] = new System.Windows.Media.SolidColorBrush(
-            ThemeColors.ColorFromAlpha(preset.Primary, _isDarkMode ? 0.12 : 0.08));
-        app.Resources["BorderFocusedBrush"] = new System.Windows.Media.SolidColorBrush(
-            ThemeColors.ColorFromAlpha(preset.Primary, 0.50));
+        try
+        {
+            app.Resources["AccentPrimaryBrush"] = new System.Windows.Media.SolidColorBrush(preset.Primary);
+            app.Resources["AccentPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush(preset.Hover);
+            app.Resources["AccentPrimaryColor"] = preset.Primary;
+            app.Resources["AccentPrimaryHoverColor"] = preset.Hover;
 
-        ThemeChanged?.Invoke();
+            app.Resources["AccentSubtleBrush"] = new System.Windows.Media.SolidColorBrush(
+                ThemeColors.ColorFromAlpha(preset.Primary, _isDarkMode ? 0.12 : 0.08));
+            app.Resources["BorderFocusedBrush"] = new System.Windows.Media.SolidColorBrush(
+                ThemeColors.ColorFromAlpha(preset.Primary, 0.50));
+
+            ThemeChanged?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Accent theme failed: {ex.Message}");
+        }
     }
 
     private static bool IsSystemDarkTheme()
@@ -81,7 +103,7 @@ public static class ThemeManager
         }
         catch
         {
-            return true; // Default to dark
+            return true;
         }
     }
 }
