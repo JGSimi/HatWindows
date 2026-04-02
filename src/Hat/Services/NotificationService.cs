@@ -17,10 +17,17 @@ public static class NotificationService
         try
         {
             // Using Microsoft.Toolkit.Uwp.Notifications
-            new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
+            var builder = new Microsoft.Toolkit.Uwp.Notifications.ToastContentBuilder()
                 .AddText(title)
-                .AddText(body)
-                .Show();
+                .AddText(body);
+
+            var content = builder.GetToastContent();
+            var xml = new Windows.Data.Xml.Dom.XmlDocument();
+            xml.LoadXml(content.GetContent());
+            var toast = new Windows.UI.Notifications.ToastNotification(xml);
+            Windows.UI.Notifications.ToastNotificationManager
+                .CreateToastNotifier("Hat")
+                .Show(toast);
         }
         catch
         {

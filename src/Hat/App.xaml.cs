@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Windows;
 using Hat.Services;
+using Hat.Theme;
 using Hat.ViewModels;
 using Hat.Views.Windows;
 

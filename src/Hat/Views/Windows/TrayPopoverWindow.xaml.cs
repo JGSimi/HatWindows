@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using Hat.Models;
 using Hat.Theme;
 
 namespace Hat.Views.Windows;
