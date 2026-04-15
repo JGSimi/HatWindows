@@ -3,7 +3,7 @@
 ; Run with: iscc hat-installer.iss
 
 #define MyAppName "Hat"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "JGSimi"
 #define MyAppURL "https://github.com/JGSimi/HatWindows"
 #define MyAppExeName "Hat.exe"

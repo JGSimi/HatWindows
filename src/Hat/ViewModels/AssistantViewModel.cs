@@ -95,25 +95,54 @@ public partial class AssistantViewModel : ObservableObject
     {
         if (IsProcessing) return;
 
-        var clipText = ClipboardService.GetText() ?? "";
-        var clipImage = ClipboardService.ContainsImage() ? ClipboardService.GetImageAsBase64() : null;
-
-        // If we have an image, clear text that looks like a URL/data URI
-        if (clipImage != null)
+        try
         {
-            var lower = clipText.Trim().ToLowerInvariant();
-            if (lower.StartsWith("data:image/") || lower.StartsWith("http://") ||
-                lower.StartsWith("https://") || lower.StartsWith("file://"))
+            // Single atomic read with retries — avoids two independent Win32
+            // clipboard-lock races when the hotkey fires right after Ctrl+C.
+            var snapshot = ClipboardService.Snapshot();
+
+            if (snapshot.Status == ClipboardReadStatus.Locked)
             {
-                clipText = "";
+                NotificationService.NotifyResponseComplete(
+                    "Nao consegui ler o clipboard — outro app estava usando. Tente de novo.",
+                    App.Settings.PlayNotifications);
+                return;
             }
+
+            if (snapshot.Status == ClipboardReadStatus.Empty)
+            {
+                NotificationService.NotifyResponseComplete(
+                    "Clipboard vazio — copie algo primeiro.",
+                    App.Settings.PlayNotifications);
+                return;
+            }
+
+            var clipText = snapshot.Text ?? "";
+            var clipImage = snapshot.ImageBase64;
+
+            // If we have an image, clear text that looks like a URL/data URI
+            if (clipImage != null)
+            {
+                var lower = clipText.Trim().ToLowerInvariant();
+                if (lower.StartsWith("data:image/") || lower.StartsWith("http://") ||
+                    lower.StartsWith("https://") || lower.StartsWith("file://"))
+                {
+                    clipText = "";
+                }
+            }
+
+            var images = clipImage != null ? new List<string> { clipImage } : null;
+            await ExecuteRequestAsync(clipText, images, null);
         }
-
-        if (string.IsNullOrEmpty(clipText) && clipImage == null)
-            return;
-
-        var images = clipImage != null ? new List<string> { clipImage } : null;
-        await ExecuteRequestAsync(clipText, images, null);
+        catch (Exception ex)
+        {
+            // ProcessClipboard is async void — catch everything so exceptions
+            // cannot escape into the unhandled-exception handler.
+            System.Diagnostics.Debug.WriteLine($"ProcessClipboard failed: {ex}");
+            NotificationService.NotifyResponseComplete(
+                $"Erro ao processar clipboard: {ex.Message}",
+                App.Settings.PlayNotifications);
+        }
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
